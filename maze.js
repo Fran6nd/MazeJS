@@ -16,9 +16,10 @@ class point {
     }
 }
 class maze {
-    constructor(size) {
+    constructor(size, canvas) {
         this.size = size;
         this.map = [];
+        this.canvas = canvas;
         console.log(size);
         this.map.length = size.x;
         for (let x = 0; x < this.map.length; x++) {
@@ -108,17 +109,19 @@ class maze {
     }
     explore(previousPoint)
     {
+        this.draw();
+        let me = this;
         console.log('exploring');
         this.map[previousPoint.x][previousPoint.y] = 0;
         let possibilities = this.getPathablePointsAround(previousPoint);
         if(possibilities.length == 1)
         {
-            this.explore(possibilities[0]);
+            window.requestAnimationFrame(function(){me.explore(possibilities[0]);});
         }
         else if(possibilities.length > 0)
         {
             let choice = getRandomInt(possibilities.length - 1);
-            this.explore(possibilities[choice]);
+            window.requestAnimationFrame(function(){me.explore(possibilities[choice]);});
         }
         else{
             console.log('no possibilities');
@@ -136,7 +139,8 @@ class maze {
     onIteration(x, y, tile) {
 
     }
-    draw(canvas) {
+    draw() {
+        let canvas = this.canvas;
         let canvasSize = new size(canvas.width, canvas.height);
         let ctx = canvas.getContext('2d');
         let tileSize = new size(canvasSize.x / this.size.x, canvasSize.y / this.size.y);
@@ -168,6 +172,6 @@ function draw(canvas) {
             //ctx.fillStyle = "rgba(" + 255 + "," + 255 + "," + 255 + "," + (255 / 255) + ")";
             // ctx.fillRect(i, 1, 1, 1);
         }
-        new maze(new size(50, 50)).draw(canvas)
+        new maze(new size(50, 50),canvas);
     }
 }
