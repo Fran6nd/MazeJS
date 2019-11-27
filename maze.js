@@ -20,7 +20,6 @@ class maze {
         this.size = size;
         this.map = [];
         this.canvas = canvas;
-        console.log(size);
         this.map.length = size.x;
         for (let x = 0; x < this.map.length; x++) {
             this.map[x] = [];
@@ -85,7 +84,6 @@ class maze {
             pointList.push(new point(pos.x + 1, pos.y));
             pointList.push(new point(pos.x - 1, pos.y));
         }
-        console.log(pointList, 'gogo');
         let output = [];
         for (let i = 0; i < pointList.length; i++) {
             if (this.isPointInside(pointList[i])) {
@@ -94,7 +92,6 @@ class maze {
                 }
             }
         }
-        //console.log(output, 'gogo');
         return output;
     }
     generate() {
@@ -112,7 +109,6 @@ class maze {
             let new_index = index + 1;
             this.draw();
             let me = this;
-            console.log('exploring');
             this.map[point.x][point.y] = 0;
             let possibilities = this.getPathablePointsAround(point);
             if (possibilities.length == 1) {
@@ -125,7 +121,6 @@ class maze {
                 window.requestAnimationFrame(function () { me.explore(point, possibilities[choice], startPoint, new_index); });
             }
             else {
-                console.log('index', index);
                 if (index - 1 > 0)
                     window.requestAnimationFrame(function () { me.explore(null, me.path[index - 1], startPoint, index - 1); });
             }
@@ -148,7 +143,6 @@ class maze {
         let canvasSize = new size(canvas.width, canvas.height);
         let ctx = canvas.getContext('2d');
         let tileSize = new size(canvasSize.x / this.size.x, canvasSize.y / this.size.y);
-        console.log(tileSize);
         this.onIteration = function (x, y, map) {
             if (map[x][y] == 0) {
                 ctx.fillStyle = 'white';
