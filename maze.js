@@ -42,10 +42,10 @@ class maze {
     }
     isPathable(p, previousPoint) {
         let closePoints = [];
-         closePoints.push(new point(p.x + 1, p.y + 1));
-         closePoints.push(new point(p.x - 1, p.y + 1));
-         closePoints.push(new point(p.x + 1, p.y - 1));
-         closePoints.push(new point(p.x - 1, p.y - 1));
+        closePoints.push(new point(p.x + 1, p.y + 1));
+        closePoints.push(new point(p.x - 1, p.y + 1));
+        closePoints.push(new point(p.x + 1, p.y - 1));
+        closePoints.push(new point(p.x - 1, p.y - 1));
 
         closePoints.push(new point(p.x, p.y + 1));
         closePoints.push(new point(p.x - 1, p.y));
@@ -54,8 +54,7 @@ class maze {
         let closePointsAroundValid = [];
         for (let i = 0; i < closePoints.length; i++) {
             if (this.isPointInside(closePoints[i])) {
-                if(closePoints[i].x != previousPoint.x && closePoints[i].y != previousPoint.y)
-                {
+                if (closePoints[i].x != previousPoint.x && closePoints[i].y != previousPoint.y) {
                     closePointsAroundValid.push(closePoints[i]);
                 }
             }
@@ -64,13 +63,31 @@ class maze {
             return false;
         }
         let availablePointscounter = 0;
-        for(let i = 0; i < closePointsAroundValid.length; i++)
-        {
+        for (let i = 0; i < closePointsAroundValid.length; i++) {
             let pt = closePointsAroundValid[i];
-            if(this.map[pt.x][pt.y] == 0)
-            {
+            if (this.map[pt.x][pt.y] == 0) {
                 return false;
             }
+        }
+        closePoints = [];
+        closePoints.push(new point(p.x, p.y + 1));
+        closePoints.push(new point(p.x - 1, p.y));
+        closePoints.push(new point(p.x, p.y - 1));
+        closePoints.push(new point(p.x + 1, p.y));
+        for (let i = 0; i < closePoints.length; i++) {
+            let pt = closePoints[i];
+            //console.log(pt);
+            if(this.isPointInside(pt))
+            {
+                if (this.map[closePoints[i].x][closePoints[i].y] == 0) {
+                    availablePointscounter++;
+                }
+            }
+
+        }
+        console.log(availablePointscounter);
+        if (availablePointscounter>1) {
+            return false;
         }
         return true;
     }
