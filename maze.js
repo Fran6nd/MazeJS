@@ -53,7 +53,7 @@ class maze {
         closePoints.push(new point(p.x, p.y + 1));
         closePoints.push(new point(p.x - 1, p.y));
         closePoints.push(new point(p.x, p.y - 1));
-        closePoints.push(new point(p.x - 1, p.y));
+        closePoints.push(new point(p.x + 1, p.y));
         let closePointsAroundValid = [];
         for(let i = 0; i < closePoints.length; i++)
         {
