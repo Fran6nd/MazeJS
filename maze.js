@@ -33,48 +33,42 @@ class maze {
         this.generate();
     }
     randomPoint() {
-        return new point(getRandomInt(this.size.x) , getRandomInt(this.size.y));
+        return new point(getRandomInt(this.size.x), getRandomInt(this.size.y));
     }
-    isPointInside(p)
-    {
-        if (p.x >= 0 && p.y >= 0 && p.x < this.map.length && p.y < this.map[0].length)
-        {
+    isPointInside(p) {
+        if (p.x >= 0 && p.y >= 0 && p.x < this.map.length && p.y < this.map[0].length) {
             return true;
         }
         return false;
     }
-    isPathable(p)
-    {
+    isPathable(p, previousPoint) {
         let closePoints = [];
-       /* closePoints.push(new point(p.x + 1, p.y + 1));
-        closePoints.push(new point(p.x - 1, p.y + 1));
-        closePoints.push(new point(p.x + 1, p.y - 1));
-        closePoints.push(new point(p.x - 1, p.y - 1));*/
+        /* closePoints.push(new point(p.x + 1, p.y + 1));
+         closePoints.push(new point(p.x - 1, p.y + 1));
+         closePoints.push(new point(p.x + 1, p.y - 1));
+         closePoints.push(new point(p.x - 1, p.y - 1));*/
 
         closePoints.push(new point(p.x, p.y + 1));
         closePoints.push(new point(p.x - 1, p.y));
         closePoints.push(new point(p.x, p.y - 1));
         closePoints.push(new point(p.x + 1, p.y));
         let closePointsAroundValid = [];
-        for(let i = 0; i < closePoints.length; i++)
-        {
-            if (this.isPointInside(closePoints[i]))
-            {
+        for (let i = 0; i < closePoints.length; i++) {
+            if (this.isPointInside(closePoints[i])) {
                 closePointsAroundValid.push(closePoints[i]);
             }
         }
-        if(this.map[p.x][p.y] == 0)
-        {
+        if (this.map[p.x][p.y] == 0) {
             return false;
         }
-        let availablePointscounter = 0;
+        /*let availablePointscounter = 0;
         for(let i = 0; i < closePointsAroundValid.length; i++)
         {
             if(closePointsAroundValid[i] == 1)
             {
                 return false;
             }
-        }
+        }*/
         return true;
     }
     getPathablePointsAround(pos) {
@@ -87,46 +81,44 @@ class maze {
             pointList.push(new point(pos.x + 1, pos.y));
             pointList.push(new point(pos.x - 1, pos.y));
         }
-        console.log(pointList);
+        console.log(pointList, 'gogo');
         let output = [];
-        for(let i = 0; i < pointList.length; i++)
-        {
-            if (this.isPointInside(pointList[i]))
-            {
-                if(this.isPathable(pointList[i]))
-                {
+        for (let i = 0; i < pointList.length; i++) {
+            if (this.isPointInside(pointList[i])) {
+                if (this.isPathable(pointList[i], pos)) {
                     output.push(pointList[i]);
                 }
             }
         }
+        //console.log(output, 'gogo');
         return output;
     }
     generate() {
         this.pathed = [];
         let startPoint = this.randomPoint();
-        this.explore(startPoint);
+        this.explore(null, startPoint, startPoint);
 
     }
-    explore(previousPoint)
-    {
+    explore(previousPoint, point, startPoint) {
         this.draw();
         let me = this;
         console.log('exploring');
-        this.map[previousPoint.x][previousPoint.y] = 0;
-        let possibilities = this.getPathablePointsAround(previousPoint);
-        if(possibilities.length == 1)
-        {
-            window.requestAnimationFrame(function(){me.explore(possibilities[0]);});
+        this.map[point.x][point.y] = 0;
+        let possibilities = this.getPathablePointsAround(point);
+        if (possibilities.length == 1) {
+            //me.explore(possibilities[0]);
+            window.requestAnimationFrame(function () { me.explore(point, possibilities[0], startPoint); });
         }
-        else if(possibilities.length > 0)
-        {
+        else if (possibilities.length > 0) {
             let choice = getRandomInt(possibilities.length - 1);
-            window.requestAnimationFrame(function(){me.explore(possibilities[choice]);});
+            //me.explore(possibilities[choice]);
+            window.requestAnimationFrame(function () { me.explore(point, possibilities[choice], startPoint); });
         }
-        else{
+        else {
             console.log('no possibilities');
             //this.explore(previousPoint);
         }
+
 
     }
     iterate() {
@@ -172,6 +164,6 @@ function draw(canvas) {
             //ctx.fillStyle = "rgba(" + 255 + "," + 255 + "," + 255 + "," + (255 / 255) + ")";
             // ctx.fillRect(i, 1, 1, 1);
         }
-        new maze(new size(50, 50),canvas);
+        new maze(new size(50, 50), canvas);
     }
 }
