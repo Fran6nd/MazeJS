@@ -116,7 +116,7 @@ class maze {
                 window.requestAnimationFrame(function () { me.explore(point, possibilities[0], startPoint, new_index); });
             }
             else if (possibilities.length > 0) {
-                let choice = getRandomInt(possibilities.length - 1);
+                let choice = getRandomInt(possibilities.length);
                 //me.explore(possibilities[choice]);
                 window.requestAnimationFrame(function () { me.explore(point, possibilities[choice], startPoint, new_index); });
             }
