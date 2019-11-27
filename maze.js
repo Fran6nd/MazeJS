@@ -43,10 +43,10 @@ class maze {
     }
     isPathable(p, previousPoint) {
         let closePoints = [];
-        /* closePoints.push(new point(p.x + 1, p.y + 1));
+         closePoints.push(new point(p.x + 1, p.y + 1));
          closePoints.push(new point(p.x - 1, p.y + 1));
          closePoints.push(new point(p.x + 1, p.y - 1));
-         closePoints.push(new point(p.x - 1, p.y - 1));*/
+         closePoints.push(new point(p.x - 1, p.y - 1));
 
         closePoints.push(new point(p.x, p.y + 1));
         closePoints.push(new point(p.x - 1, p.y));
@@ -55,20 +55,24 @@ class maze {
         let closePointsAroundValid = [];
         for (let i = 0; i < closePoints.length; i++) {
             if (this.isPointInside(closePoints[i])) {
-                closePointsAroundValid.push(closePoints[i]);
+                if(closePoints[i].x != previousPoint.x && closePoints[i].y != previousPoint.y)
+                {
+                    closePointsAroundValid.push(closePoints[i]);
+                }
             }
         }
         if (this.map[p.x][p.y] == 0) {
             return false;
         }
-        /*let availablePointscounter = 0;
+        let availablePointscounter = 0;
         for(let i = 0; i < closePointsAroundValid.length; i++)
         {
-            if(closePointsAroundValid[i] == 1)
+            let pt = closePointsAroundValid[i];
+            if(this.map[pt.x][pt.y] == 0)
             {
                 return false;
             }
-        }*/
+        }
         return true;
     }
     getPathablePointsAround(pos) {
@@ -96,27 +100,35 @@ class maze {
     generate() {
         this.pathed = [];
         let startPoint = this.randomPoint();
-        this.explore(null, startPoint, startPoint);
+        this.path = [];
+        this.path.length = this.size.x * this.size.y;
+        this.explore(null, startPoint, startPoint, 0);
+
 
     }
-    explore(previousPoint, point, startPoint) {
-        this.draw();
-        let me = this;
-        console.log('exploring');
-        this.map[point.x][point.y] = 0;
-        let possibilities = this.getPathablePointsAround(point);
-        if (possibilities.length == 1) {
-            //me.explore(possibilities[0]);
-            window.requestAnimationFrame(function () { me.explore(point, possibilities[0], startPoint); });
-        }
-        else if (possibilities.length > 0) {
-            let choice = getRandomInt(possibilities.length - 1);
-            //me.explore(possibilities[choice]);
-            window.requestAnimationFrame(function () { me.explore(point, possibilities[choice], startPoint); });
-        }
-        else {
-            console.log('no possibilities');
-            //this.explore(previousPoint);
+    explore(previousPoint, point, startPoint, index) {
+        if (point) {
+            this.path[index] = point;
+            let new_index = index + 1;
+            this.draw();
+            let me = this;
+            console.log('exploring');
+            this.map[point.x][point.y] = 0;
+            let possibilities = this.getPathablePointsAround(point);
+            if (possibilities.length == 1) {
+                //me.explore(possibilities[0]);
+                window.requestAnimationFrame(function () { me.explore(point, possibilities[0], startPoint, new_index); });
+            }
+            else if (possibilities.length > 0) {
+                let choice = getRandomInt(possibilities.length - 1);
+                //me.explore(possibilities[choice]);
+                window.requestAnimationFrame(function () { me.explore(point, possibilities[choice], startPoint, new_index); });
+            }
+            else {
+                console.log('index', index);
+                if (index - 1 > 0)
+                    window.requestAnimationFrame(function () { me.explore(null, me.path[index - 1], startPoint, index - 1); });
+            }
         }
 
 
