@@ -2,15 +2,33 @@
 
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8"/>
-    <title>Canvas tutorial</title> 
-    <script src="maze.js"></script> 
-    <style type="text/css">
-      canvas { border: 1px solid black; }
-    </style>
-  </head>
-  <body onload="draw(document.getElementById('tutorial'));">
-    <canvas id="tutorial" width="600" height="500"></canvas>
-  </body>
+
+<head>
+  <meta charset="utf-8" />
+  <title>CMazeJS</title>
+
+  <script src="maze.js"></script>
+  <style type="text/css">
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+
+<body>
+  <div>Real time rendering<input type="checkbox" id="use_rtr" checked> Width:<input type="number" id="width"
+      name="tentacles" min="10" max="200" value=50>Height:<input type="number" id="height" name="tentacles" min="10"
+      max="200" value=50> <button id='generate'>Generate</button><button id='cancel'>Cancel</button> </div>
+  <div><canvas id="canvas" width="600" height="500"></canvas></div>
+
+</body>
+<script>
+  document.getElementById("generate").addEventListener("click", function () {
+    generate(document.getElementById("canvas"), document.getElementById("width").value, document.getElementById("height").value,  document.getElementById("use_rtr").checked);
+  });
+  document.getElementById("cancel").addEventListener("click", function () {
+    cancel();
+  }); 
+</script>
+
 </html>

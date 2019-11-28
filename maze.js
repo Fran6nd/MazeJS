@@ -2,6 +2,7 @@ function isOdd(num) { return num % 2; }
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
+let USE_REAL_TIME_RENDERING = true;
 
 class size {
     constructor(x, y) {
@@ -17,6 +18,7 @@ class point {
 }
 class maze {
     constructor(size, canvas) {
+        this.aborted = false;
         this.size = size;
         this.map = [];
         this.canvas = canvas;
@@ -32,7 +34,7 @@ class maze {
         this.generate();
     }
     randomPoint() {
-        return new point(getRandomInt(this.size.x), getRandomInt(this.size.y));
+        return new point(getRandomInt(this.size.x - 1) + 1, getRandomInt(this.size.y - 1) + 1);
     }
     isPointInside(p) {
         if (p.x >= 0 && p.y >= 0 && p.x < this.map.length && p.y < this.map[0].length) {
@@ -76,17 +78,14 @@ class maze {
         closePoints.push(new point(p.x + 1, p.y));
         for (let i = 0; i < closePoints.length; i++) {
             let pt = closePoints[i];
-            //console.log(pt);
-            if(this.isPointInside(pt))
-            {
+            if (this.isPointInside(pt)) {
                 if (this.map[closePoints[i].x][closePoints[i].y] == 0) {
                     availablePointscounter++;
                 }
             }
 
         }
-        console.log(availablePointscounter);
-        if (availablePointscounter>1) {
+        if (availablePointscounter > 1) {
             return false;
         }
         return true;
@@ -120,8 +119,11 @@ class maze {
 
 
     }
+    abort() {
+        this.aborted = true;
+    }
     explore(previousPoint, point, startPoint, index) {
-        if (point) {
+        if (point && !this.aborted) {
             this.path[index] = point;
             let new_index = index + 1;
             this.draw();
@@ -129,17 +131,38 @@ class maze {
             this.map[point.x][point.y] = 0;
             let possibilities = this.getPathablePointsAround(point);
             if (possibilities.length == 1) {
-                //me.explore(possibilities[0]);
+                if(USE_REAL_TIME_RENDERING)
+                {
                 window.requestAnimationFrame(function () { me.explore(point, possibilities[0], startPoint, new_index); });
+                }
+                else
+                {
+                    me.explore(point, possibilities[0], startPoint, new_index);
+                }
             }
             else if (possibilities.length > 0) {
                 let choice = getRandomInt(possibilities.length);
-                //me.explore(possibilities[choice]);
+                if(USE_REAL_TIME_RENDERING)
+                {
                 window.requestAnimationFrame(function () { me.explore(point, possibilities[choice], startPoint, new_index); });
+                }
+                else{
+                    me.explore(point, possibilities[choice], startPoint, new_index);
+                }
             }
             else {
-                if (index - 1 > 0)
-                    window.requestAnimationFrame(function () { me.explore(null, me.path[index - 1], startPoint, index - 1); });
+                if (index - 1 > 0) {
+                    if(USE_REAL_TIME_RENDERING)
+                    {
+                        window.requestAnimationFrame(function () { me.explore(null, me.path[index - 1], startPoint, index - 1); });
+                    }
+                    else{
+                        me.explore(null, me.path[index - 1], startPoint, index - 1);
+                    }
+                }
+                else {
+                    alert('Maze generation successfull!');
+                }
             }
         }
 
@@ -174,19 +197,17 @@ class maze {
         this.iterate();
     }
 }
-
-function draw(canvas) {
-
+let mz;
+function generate(canvas, x, y, rtr) {
+    USE_REAL_TIME_RENDERING = rtr;
+    if (mz)
+        mz.abort();
     if (canvas.getContext) {
-        let ctx = canvas.getContext('2d');
-        let x = canvas.width;
-        let y = canvas.height;
-        let mazeSize = new size(50, 50);
-
-        for (let i = 0; i < x; i++) {
-            //ctx.fillStyle = "rgba(" + 255 + "," + 255 + "," + 255 + "," + (255 / 255) + ")";
-            // ctx.fillRect(i, 1, 1, 1);
-        }
-        new maze(new size(50, 50), canvas);
+        mz = new maze(new size(x, y), canvas);
     }
+}
+function cancel()
+{
+if (mz)
+    mz.abort();  
 }
